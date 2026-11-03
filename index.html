@@ -23,8 +23,10 @@ button:disabled{background:#999}#msg{display:none;text-align:center;font-size:1.
 <script>
 const URL_='https://docs.google.com/forms/d/e/1FAIpQLSdxfaYxcah0Gn_wn_UVKtwu-Dj6rN1MdqmprL7BOcROOMwOSg/formResponse';
 const D=120000,K='nfcFormStart',now=Date.now();let s=+localStorage.getItem(K)||0;
-// new session if none, or previous one expired over 2 min ago (fresh tap)
-if(!s||now-s>2*D){s=now;localStorage.setItem(K,s);localStorage.removeItem('nfcDone')}
+const q=new URLSearchParams(location.search);
+// ?tap = fresh NFC tap: always start new session, then strip param so reload resumes
+if(q.has('tap')||!s){s=now;localStorage.setItem(K,s);localStorage.removeItem('nfcDone')}
+if(q.has('tap')){q.delete('tap');const qs=q.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash)}
 const t=document.getElementById('t'),fs=document.getElementById('fs'),m=document.getElementById('msg');let iv;
 function show(x){m.textContent=x;m.style.display='block';window.scrollTo(0,0)}
 function lock(x){clearInterval(iv);fs.disabled=true;show(x)}
